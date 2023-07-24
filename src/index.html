@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Display Folder Content in Grid</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="flex flexColumn">
+        <div>
+            <button id="btnOpenFolder">Import a Pack Folder</button>
+        </div>
+        <div class="flex" style="flex-wrap: wrap;">
+            <div class="flex flexOne flexColumn">
+
+                <h2>Pack details</h2>
+                <section id="packInformations"></section>
+
+                <h2>Thumbnails & Previews</h2>
+                <section class="grid-container" id="previewImages"></section>
+
+                <h2>Files</h2>
+                <div class="grid-container" id="gridContainer"></div>
+            </div>
+            <div id="rightScreen">
+                <div class="static">
+                    <div>
+                        <p style="font-size: 25px;">
+                            Please <a
+                                href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#naming-assets"
+                                target="_blank">read
+                                the documentation</a> to fix your pack folder according to the nomenclature.</p>
+                    </div>
+
+                    <section id="errorContainer">
+                        <h2>Error List</h2>
+                        <ul id="errorList"></ul>
+                    </section>
+
+                    <div class="image-preview">
+                        <h2>Image Preview</h2>
+                        <div id="tags" class="flex"></div>
+                        <div class="image-preview-container">
+                            <img id="clickedImagePreview" src="" alt="Clicked Image Preview">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module" src="./loadingFiles.js"></script>
+    <script type="module" src="./packInformations.js"></script>
+
+    <!--
+
+        //TODO
+        - Split the code into multiple files
+
+        - Ignore files containing .preview. in the filename.
+        - Add the exact same count of objects on the page as the count of objects existing on the store.
+        - Make the thumbnail always first in the Thumbnails & Previews section.
+        - Make the image from imagesPreview folder also clickable for preview.
+        - List audio files.
+        - Add tags from the parent folder to the existing tags on the clicked image.
+        - List the animation for each animated object.
+
+        Later
+        - Support use of asset.json
+        - Support 9-patch object nomenclature with preview
+
+
+    -->
+
+</body>
+
+</html>
