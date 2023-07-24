@@ -217,7 +217,7 @@ async function handleOpenFolderButtonClick() {
  * @param {HTMLSpanElement} span - The span element containing the file name.
  * @param {FileSystemFileHandle} fileHandle - The file handle of the file to rename.
  */
-function handleFilenameClick(span, fileHandle) {
+export function handleFilenameClick(span, fileHandle) {
   span.removeEventListener("click", () =>
     handleFilenameClick(span, fileHandle)
   );

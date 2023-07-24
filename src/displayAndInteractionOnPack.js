@@ -1,3 +1,6 @@
+import { handleFilenameClick } from "./loadingFiles.js";
+import { requestPermissionAndRename } from "./fileUtils.js";
+
 /**
  * Checks the file name for underscores and updates the border style of the element accordingly.
  * @param {string} fileName - The file name to check.
@@ -92,11 +95,10 @@ export function createImageGridItem(
  * @param {FileSystemFileHandle} fileHandle - The file handle of the file.
  * @returns {HTMLSpanElement} The span element with the file name.
  */
- function createFilenameSpan(fileName, fileHandle) {
-    const span = document.createElement("span");
-    span.textContent = fileName;
-    span.style.cursor = "pointer";
-    span.addEventListener("click", () => handleFilenameClick(span, fileHandle));
-    return span;
-  }
-  
+function createFilenameSpan(fileName, fileHandle) {
+  const span = document.createElement("span");
+  span.textContent = fileName;
+  span.style.cursor = "pointer";
+  span.addEventListener("click", () => handleFilenameClick(span, fileHandle));
+  return span;
+}
