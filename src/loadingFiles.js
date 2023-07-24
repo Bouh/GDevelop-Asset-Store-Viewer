@@ -188,6 +188,14 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
   } catch (error) {
     console.error("Error accessing the folder:", error);
   }
+
+  const packDetailsDiv = document.getElementById("numberOfSprites");
+
+  if (packDetailsDiv) {
+    packDetailsDiv.innerHTML =
+      document.querySelectorAll("#gridContainer")[0].childNodes.length +
+      " Sprites (Objects)";
+  }
 }
 
 /**

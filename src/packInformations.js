@@ -11,10 +11,7 @@ export function displayPackInfo(packData) {
 
   packInfo.innerHTML = `
      <ul>
-        <li>
-        ${
-          document.querySelectorAll("#gridContainer")[0].childNodes.length
-        } Sprites (Objects)</li>
+        <li id="numberOfSprites"></li>
      </ul>
      <h2>Package Information</h2>
      <p><strong>Unique tag:</strong> <textarea id="tag" class="editable">${
