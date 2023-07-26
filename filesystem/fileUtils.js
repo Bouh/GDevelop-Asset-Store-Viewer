@@ -22,6 +22,8 @@ export async function requestPermissionAndRename(fileHandle, newName) {
  * @returns {FileSystemFileHandle | null} The file entry if found, or null if not found.
  */
 export async function getFileEntry(directoryHandle, fileName) {
+  fileName = fileName.toLowerCase();
+
   try {
     for await (const entry of directoryHandle.values()) {
       if (entry.name === fileName) {
