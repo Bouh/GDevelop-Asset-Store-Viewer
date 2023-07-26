@@ -27,12 +27,20 @@ a {
   font-weight: bold;
 }
 
+#tags {
+  display: block;
+  height: 73px;
+  overflow: auto;
+}
+
 .chipTag {
   background-color: #616161;
   border-radius: 10px;
+  padding: 4px 10px;
+  margin: 3px;
+  height: fit-content;
   width: fit-content;
-  padding: 4px 9px;
-  margin-right: 4px;
+  float: left;
 }
 
 .grid-container {
@@ -150,10 +158,6 @@ ul#errorList li {
   border: 1px solid #ccc;
   padding: 5px;
   height: 500px;
-}
-
-#clickedImagePreview {
- 
 }
 
 .flex {
