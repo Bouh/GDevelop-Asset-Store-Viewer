@@ -5,7 +5,7 @@
 
 ## How to use it
 
-[Open the viewer](https://witly.fr/assets/filesystem/)
+[Open the viewer](https://witly.fr/assets/production/)
 
 - Import a folder according to the GDevelop asset store nomenclature.
 - Click on the objects on the left of the screen to view their animation on the right.
