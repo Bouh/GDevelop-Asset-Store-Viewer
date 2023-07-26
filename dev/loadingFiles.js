@@ -10,6 +10,7 @@ import {
   readTextFile,
   getDirectoryEntry,
   underscoresHaveSpacesAround,
+  countCharacter,
 } from "./fileUtils.js";
 
 const errorList = document.getElementById("errorList");
@@ -187,6 +188,30 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
             );
           } else {
             let prefix = filename.split("_")[0];
+
+            if (filename.toLowerCase().startsWith("9patch_")) {
+              //Is a 9-patch
+              prefix = filename.split("_")[1];
+              console.log("Is 9-patch: " + filename);
+            } else if (filename.toLowerCase().startsWith("tiled_")) {
+              // Is a tiled
+              console.log("Is tiled: " + filename);
+              prefix = filename.split("_")[1];
+            } else if (countCharacter(filename.toLowerCase(), "_") == 2) {
+              prefix = filename.split("_")[0];
+              // Is an animated object
+            } else if (countCharacter(filename.toLowerCase(), "_") <= 1) {
+              prefix = filename.split("_")[0];
+              // Is a static object
+            } else {
+              addMessageToErrorList(
+                '"' +
+                  filename +
+                  '" is not a valid file name. Please read <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#naming-assets" target="_blank">the naming convention.</a>',
+                "error"
+              );
+            }
+
             prefix = prefix.split(".")[0];
             if (!filenameGroups[prefix]) {
               filenameGroups[prefix] = [];
@@ -219,8 +244,6 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
         }
       }
     }
-
-
 
     for (const prefix in filenameGroups) {
       const filenameGroup = filenameGroups[prefix];
