@@ -96,7 +96,7 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
 
       if (!packJsonFile) {
         addMessageToErrorList(
-          '"pack.json" file not found in the root folder. Please add the file with the necessary pack information.',
+          '"pack.json" file not found in the root folder. Please <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#the-title-description-and-price" target="_blank">add the necessary pack information.</a>',
           "warning"
         );
       }
