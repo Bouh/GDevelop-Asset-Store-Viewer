@@ -33,11 +33,11 @@ function addMessageToErrorList(textContent, className) {
   errorList.appendChild(listItem);
 }
 
-async function createFolderStructure(entry) {
+async function createFolderStructure(systemHandle) {
   const folderStructure = {
     kind: "directory",
-    name: entry.name,
-    handle: entry,
+    name: systemHandle.name,
+    handle: systemHandle,
     tags: [], // Add tags if necessary
     files: [],
     subFolder: [],
@@ -86,35 +86,37 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
           "warning"
         );
       }
+    } // End of the root folder
+
+    //Store in systemHandlesList all the handles of the content loaded from the File System API
+    const systemHandlesList = [];
+    for await (const systemHandle of directoryHandle.values()) {
+      systemHandlesList.push(systemHandle);
     }
 
-    const entries = [];
-    for await (const entry of directoryHandle.values()) {
-      entries.push(entry);
-    }
+    const filenameGroups = {}; // Group the files by their objact name in this structure
 
-    const filenameGroups = {};
-    for (const entry of entries) {
-      if (entry.kind === "directory") {
-        const subFolder = await createFolderStructure(entry);
+    for (const systemHandle of systemHandlesList) {
+      if (systemHandle.kind === "directory") {
+        const subFolder = await createFolderStructure(systemHandle);
         if (parentFolder) {
-          parentFolder.subFolder.push(subFolder); // Add the subFolder entry to the parent folder
+          parentFolder.subFolder.push(subFolder); // Add the subFolder systemHandle to the parent folder
           subFolder.allTagsParentIncluded.push(...parentFolder.tags);
         } else {
           // If parentFolder is null, it means this is the root folder
           packfilesStructure.subFolder.push(subFolder);
         }
-        await parsePackFolder(entry, false, subFolder);
-      } else if (entry.kind === "file") {
-        if (entry.name === "pack.json") {
-          const fileContent = await readTextFile(entry);
+        await parsePackFolder(systemHandle, false, subFolder);
+      } else if (systemHandle.kind === "file") {
+        if (systemHandle.name === "pack.json") {
+          const fileContent = await readTextFile(systemHandle);
           const packData = JSON.parse(fileContent);
           displayPackInfo(packData);
         }
 
-        if (entry.name === "TAGS.md") {
+        if (systemHandle.name === "TAGS.md") {
           // Read the tags from TAGS.md file and update the parent folder's tags
-          const fileContent = await readTextFile(entry);
+          const fileContent = await readTextFile(systemHandle);
           const tagsList = fileContent.split(",").map((tag) => tag.trim());
           if (parentFolder) {
             parentFolder.tags = tagsList;
@@ -128,28 +130,28 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
           }
         }
 
-        const fileContent = await readFile(entry);
+        const fileContent = await readFile(systemHandle);
         if (fileContent.type.startsWith("image/")) {
           if (directoryHandle.name === "previewImages") {
             createImageGridItem(
-              entry.name,
+              systemHandle.name,
               fileContent,
-              entry,
+              systemHandle,
               previewImagesSection
             );
           } else {
-            const filename = entry.name;
+            const filename = systemHandle.name;
             let prefix = filename.split("_")[0];
             prefix = prefix.split(".")[0];
             if (!filenameGroups[prefix]) {
               filenameGroups[prefix] = [];
             }
-            filenameGroups[prefix].push(entry);
+            filenameGroups[prefix].push(systemHandle);
 
             parentFolder.files.push({
               kind: "file",
-              name: entry.name,
-              handle: entry,
+              name: systemHandle.name,
+              handle: systemHandle,
             });
           }
         } else {
@@ -157,15 +159,15 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
           if (parentFolder) {
             parentFolder.files.push({
               kind: "file",
-              name: entry.name,
-              handle: entry,
+              name: systemHandle.name,
+              handle: systemHandle,
             });
           } else {
             // If parentFolder is null, it means this is the root folder
             packfilesStructure.files.push({
               kind: "file",
-              name: entry.name,
-              handle: entry,
+              name: systemHandle.name,
+              handle: systemHandle,
               tags: [],
             });
           }
