@@ -25,7 +25,6 @@ span {
 a {
   color: #00fff4;
   font-weight: bold;
-  
 }
 
 .chipTag {
@@ -71,11 +70,11 @@ a {
 }
 
 .pixelAsset {
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   width: 100%;
   image-rendering: pixelated;
-  padding: 15px;
-  margin: 10px;
 }
 
 .grid-item .file-name {
@@ -150,13 +149,11 @@ ul#errorList li {
   margin-top: 10px;
   border: 1px solid #ccc;
   padding: 5px;
+  height: 500px;
 }
 
 #clickedImagePreview {
-  max-width: 100%;
-  max-height: 300px;
-  display: block;
-  margin: auto;
+ 
 }
 
 .flex {
