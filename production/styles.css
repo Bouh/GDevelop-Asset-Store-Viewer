@@ -28,6 +28,10 @@ a {
   
 }
 
+.hidden{
+  display: none;
+}
+
 .chipTag {
   background-color: #616161;
   border-radius: 10px;

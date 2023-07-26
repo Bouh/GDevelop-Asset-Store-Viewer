@@ -10,32 +10,18 @@ export function displayPackInfo(packData) {
   const description = formatDescription(packData.longDescription);
 
   packInfo.innerHTML = `
-     <ul>
-        <li id="numberOfSprites"></li>
-     </ul>
-     <h2>Package Information</h2>
-     <p><strong>Unique tag:</strong> <textarea id="tag" class="editable">${
-       packData.tag
-     }</textarea></p>
-     <p><strong>Price:</strong> <textarea id="prices" class="editable">${price}</textarea></p>
-     <p><strong>Description:</strong><br> <textarea id="longDescription" class="editable">${description}</textarea></p>
-     <p><strong>SellerId:</strong> <textarea id="sellerId" class="editable">${
-       packData.sellerId
-     }</textarea></p>
-     <p><strong>SellerStripeAccountId:</strong> <textarea id="sellerStripeAccountId" class="editable">${
-       packData.sellerStripeAccountId
-     }</textarea></p>
+  <ul>
+  <li id="numberOfSprites"></li>
+  </ul>
+  <div class="hidden">
+    <h2>Package Information</h2>
+    <p><strong>Unique tag:</strong> <textarea id="tag" class="editable">${packData.tag}</textarea></p>
+    <p><strong>Price:</strong> <textarea id="prices" class="editable">${price}</textarea></p>
+    <p><strong>Description:</strong><br> <textarea id="longDescription" class="editable">${description}</textarea></p>
+    <p><strong>SellerId:</strong> <textarea id="sellerId" class="editable">${packData.sellerId}</textarea></p>
+    <p><strong>SellerStripeAccountId:</strong> <textarea id="sellerStripeAccountId" class="editable">${packData.sellerStripeAccountId}</textarea></p>
+  </div>
    `;
-  // Add click event listeners to the <p> elements with IDs
-  [
-    "tag",
-    "prices",
-    "longDescription",
-    "sellerId",
-    "sellerStripeAccountId",
-  ].forEach((id) => {
-    document.getElementById(id).addEventListener("click", handleEdit);
-  });
 }
 
 /**
@@ -61,14 +47,6 @@ function handleEdit(event) {
   textarea.value = valueElement.textContent;
   valueElement.replaceWith(textarea);
   textarea.focus();
-
-  textarea.addEventListener("keyup", (event) => {
-    if (event.key === "Enter") {
-      const newValue = textarea.value;
-      const idWithoutValue = id; // No need to remove "Value" from the ID now
-      updatePackInfo(idWithoutValue, newValue);
-    }
-  });
 }
 
 /**
