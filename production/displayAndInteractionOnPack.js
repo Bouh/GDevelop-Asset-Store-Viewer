@@ -24,35 +24,6 @@ export function createEditableFileNameInput(fileName, fileHandle) {
   input.value = fileName;
   input.dataset.originalName = fileName;
 
-  function handleInputBlur(event) {
-    const newName = input.value;
-    requestPermissionAndRename(fileHandle, newName)
-      .then(() => {
-        input.dataset.originalName = newName;
-        const span = createFilenameSpan(newName, fileHandle);
-        input.replaceWith(span);
-        const parentElement = span.parentElement;
-        if (parentElement && parentElement.children.length > 0) {
-          span.addEventListener("click", () =>
-            handleFilenameClick(span, fileHandle)
-          );
-          checkAndUpdateStyles(newName, parentElement.children[0]);
-        }
-      })
-      .catch((error) => {
-        console.error("Error renaming the file:", error);
-      });
-  }
-
-  function handleInputKeydown(event) {
-    if (event.key === "Enter") {
-      handleInputBlur();
-    }
-  }
-
-  input.addEventListener("keydown", handleInputKeydown);
-  input.addEventListener("blur", handleInputBlur);
-
   return input;
 }
 
@@ -98,7 +69,5 @@ export function createImageGridItem(
 function createFilenameSpan(fileName, fileHandle) {
   const span = document.createElement("span");
   span.textContent = fileName;
-  span.style.cursor = "pointer";
-  span.addEventListener("click", () => handleFilenameClick(span, fileHandle));
   return span;
 }

@@ -75,7 +75,6 @@ export async function animateClickedImagePreview(fileEntries) {
 
   const newClickedImagePreview = document.createElement("img");
   newClickedImagePreview.id = "clickedImagePreview";
-  newClickedImagePreview.alt = "Clicked Image Preview";
 
   const fileContents = await Promise.all(fileEntries.map(readFile));
   const objectURLs = fileContents.map((fileContent) =>

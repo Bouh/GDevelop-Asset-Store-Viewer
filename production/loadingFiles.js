@@ -220,8 +220,6 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
       }
     }
 
-
-
     for (const prefix in filenameGroups) {
       const filenameGroup = filenameGroups[prefix];
       const firstEntry = filenameGroup[0];
