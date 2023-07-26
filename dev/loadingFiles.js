@@ -198,10 +198,12 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
               console.log("Is tiled: " + filename);
               prefix = filename.split("_")[1];
             } else if (countCharacter(filename.toLowerCase(), "_") == 2) {
-              prefix = filename.split("_")[0];
               // Is an animated object
             } else if (countCharacter(filename.toLowerCase(), "_") <= 1) {
-              prefix = filename.split("_")[0];
+              if (filename.toLowerCase().includes(".preview.")) {
+                console.log("IGNORE: " + filename);
+                continue;
+              }
               // Is a static object
             } else {
               addMessageToErrorList(
