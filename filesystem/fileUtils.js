@@ -25,14 +25,42 @@ export async function getFileEntry(directoryHandle, fileName) {
   fileName = fileName.toLowerCase();
 
   try {
+    // Search in the directory is the file searched existing, and return the file entry
     for await (const entry of directoryHandle.values()) {
-      if (entry.name === fileName) {
+      if (fileName === entry.name.toLowerCase()) {
         return entry;
       }
     }
-    return null; // File not found
+
+    // File not found, return null
+    return null;
   } catch (error) {
     console.error("Error accessing file entry:", error);
+    return null;
+  }
+}
+
+/**
+ * Asynchronously searches for a directory entry with the specified folder name inside the given directory handle.
+ * @param {FileSystemDirectoryHandle} directoryHandle - The handle to the parent directory (FileSystemDirectoryHandle).
+ * @param {string} folderName - The name of the folder to search for (case-insensitive).
+ * @returns {Promise<FileSystemDirectoryHandle|null>} A Promise that resolves with the found directory handle if the folder exists, or null if the folder is not found or an error occurs during the search.
+ */
+export async function getDirectoryEntry(directoryHandle, folderName) {
+  folderName = folderName.toLowerCase();
+
+  try {
+    // Search in the directory is the file searched existing, and return the file entry
+    for await (const entry of directoryHandle.values()) {
+      if (folderName === entry.name.toLowerCase()) {
+        return directoryHandle;
+      }
+    }
+
+    // Directory name not found, return null
+    return null;
+  } catch (error) {
+    console.error("Error accessing directory entry:", error);
     return null;
   }
 }
@@ -115,4 +143,19 @@ export async function getFileHandle(fileName) {
 export async function readTextFile(fileHandle) {
   const file = await fileHandle.getFile();
   return await file.text();
+}
+
+/**
+ * Checks if underscores in a string have one or more spaces around them.
+ * @param {string} inputString - The input string to check.
+ * @returns {boolean} True if underscores have spaces around them, otherwise false.
+ */
+export function underscoresHaveSpacesAround(inputString) {
+  if (!inputString.includes("_")) {
+    return false;
+  }
+
+  const regex = /(\s+)_+|_+(\s+)/g;
+  // Test if the string contains underscores with no spaces around them
+  return regex.test(inputString);
 }

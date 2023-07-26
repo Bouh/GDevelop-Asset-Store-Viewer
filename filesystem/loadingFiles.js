@@ -4,7 +4,13 @@ import {
 } from "./displayAndInteractionOnPack.js";
 import { animateClickedImagePreview } from "./previewPanel.js";
 import { displayPackInfo } from "./packInformations.js";
-import { getFileEntry, readFile, readTextFile } from "./fileUtils.js";
+import {
+  getFileEntry,
+  readFile,
+  readTextFile,
+  getDirectoryEntry,
+  underscoresHaveSpacesAround,
+} from "./fileUtils.js";
 
 const errorList = document.getElementById("errorList");
 const gridContainer = document.getElementById("gridContainer");
@@ -26,16 +32,21 @@ window.packfilesStructure = {
  */
 function addMessageToErrorList(textContent, className) {
   const listItem = document.createElement("li");
-  listItem.textContent = textContent;
+  listItem.innerHTML = textContent;
   if (className) {
     listItem.classList.add(className);
   }
   errorList.appendChild(listItem);
 }
 
-async function createFolderStructure(systemHandle) {
+/**
+ *  * This function replicates the content of the pack folder to provide quicker access to tags, file paths, the number of subfolders, and all concatenated tags from parent folders.
+ * @param {FileSystemDirectoryHandle} systemHandle - The handle of the pack folder
+ * @returns {Object} The folder structure object with information about the pack folder and its contents.
+ */
+async function packFolderReplication(systemHandle) {
   const folderStructure = {
-    kind: "directory",
+    kind: systemHandle.kind,
     name: systemHandle.name,
     handle: systemHandle,
     tags: [], // Add tags if necessary
@@ -60,29 +71,38 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
       errorList.innerHTML = "";
 
       const tagsFile = await getFileEntry(directoryHandle, "TAGS.md");
+      const tagsFileContent = await readTextFile(tagsFile);
       const packJsonFile = await getFileEntry(directoryHandle, "pack.json");
+      const previewImagesFolder = await getDirectoryEntry(
+        directoryHandle,
+        "previewImages"
+      );
 
       if (tagsFile) {
         const fileContent = await readTextFile(tagsFile);
-        if (fileContent) {
-          const tags = fileContent.split(",").map((tag) => tag.trim());
-          packfilesStructure.tags = tags;
-        } else {
+        if (!tagsFileContent) {
           addMessageToErrorList(
-            "TAGS.md file is empty. Please add a list of words separated by a comma.",
+            '"TAGS.md" file is empty. Please add a list of words separated by a comma.',
             "warning"
           );
         }
       } else {
         addMessageToErrorList(
-          "TAGS.md file not found in the root folder. Please add the file with a list of words separated by a comma.",
+          '"TAGS.md" file not found in the root folder. Please add the file with a list of words separated by a comma.',
           "warning"
         );
       }
 
       if (!packJsonFile) {
         addMessageToErrorList(
-          "pack.json file not found in the root folder. Please add the file with the necessary pack information.",
+          '"pack.json" file not found in the root folder. Please add the file with the necessary pack information.',
+          "warning"
+        );
+      }
+
+      if (!previewImagesFolder) {
+        addMessageToErrorList(
+          '"previewImages" folder is missing in the root folder. Please read <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#add-a-thumbnail-and-images-previews" target="_blank">this part of the documentation.</a>',
           "warning"
         );
       }
@@ -94,11 +114,15 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
       systemHandlesList.push(systemHandle);
     }
 
-    const filenameGroups = {}; // Group the files by their objact name in this structure
+    // Group the files by their objact name in this structure
+    const filenameGroups = {};
 
+    // For each handles check the type directory or file
     for (const systemHandle of systemHandlesList) {
+      //Check if it is an folder/directory
       if (systemHandle.kind === "directory") {
-        const subFolder = await createFolderStructure(systemHandle);
+        //Create a replication of the pack folder
+        const subFolder = await packFolderReplication(systemHandle);
         if (parentFolder) {
           parentFolder.subFolder.push(subFolder); // Add the subFolder systemHandle to the parent folder
           subFolder.allTagsParentIncluded.push(...parentFolder.tags);
@@ -109,29 +133,51 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
         await parsePackFolder(systemHandle, false, subFolder);
       } else if (systemHandle.kind === "file") {
         if (systemHandle.name === "pack.json") {
-          const fileContent = await readTextFile(systemHandle);
-          const packData = JSON.parse(fileContent);
-          displayPackInfo(packData);
+          const packFileContent = await readTextFile(systemHandle);
+          if (packFileContent) {
+            displayPackInfo(JSON.parse(packFileContent));
+          } else {
+            addMessageToErrorList(
+              '"pack.json" file is empty. Please read <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#the-title-description-and-price" target="_blank">this part of the documentation.</a>',
+              "warning"
+            );
+          }
         }
 
         if (systemHandle.name === "TAGS.md") {
           // Read the tags from TAGS.md file and update the parent folder's tags
-          const fileContent = await readTextFile(systemHandle);
-          const tagsList = fileContent.split(",").map((tag) => tag.trim());
-          if (parentFolder) {
-            parentFolder.tags = tagsList;
-            parentFolder.allTagsParentIncluded.push(...tagsList);
-          } else {
-            packfilesStructure.tags = tagsList;
+          const tagsFileContent = await readTextFile(systemHandle);
+          const tagsList = tagsFileContent.split(",").map((tag) => tag.trim());
+
+          //There is no parent folder existing, this is the root folder of the pack
+          if (!parentFolder) {
+            packfilesStructure.tags.push(...tagsList);
 
             packfilesStructure.subFolder.map((folder) => {
+              folder.tags.push(...tagsList);
               folder.allTagsParentIncluded.push(...tagsList);
             });
+            //There is no parent folder
+          } else {
+            parentFolder.tags.push(...tagsList);
+            parentFolder.allTagsParentIncluded.push(...tagsList);
           }
         }
 
         const fileContent = await readFile(systemHandle);
+        const filename = systemHandle.name;
+
         if (fileContent.type.startsWith("image/")) {
+          //If the filename have spaces around underscore.
+          if (underscoresHaveSpacesAround(filename)) {
+            addMessageToErrorList(
+              '"' +
+                filename +
+                '" have spaces around underscore(s). Please remove them.',
+              "error"
+            );
+          }
+
           if (directoryHandle.name === "previewImages") {
             createImageGridItem(
               systemHandle.name,
@@ -140,7 +186,6 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
               previewImagesSection
             );
           } else {
-            const filename = systemHandle.name;
             let prefix = filename.split("_")[0];
             prefix = prefix.split(".")[0];
             if (!filenameGroups[prefix]) {
@@ -174,6 +219,8 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
         }
       }
     }
+
+
 
     for (const prefix in filenameGroups) {
       const filenameGroup = filenameGroups[prefix];
@@ -231,3 +278,5 @@ export function handleFilenameClick(span, fileHandle) {
 // Event listener for the "Open Folder" button
 const btnOpenFolder = document.getElementById("btnOpenFolder");
 btnOpenFolder.addEventListener("click", handleOpenFolderButtonClick);
+
+//console.log(window.packfilesStructure);
