@@ -9,13 +9,14 @@
 <body>
 
     <div class="flex flexColumn">
-        <div>
-            <button id="btnOpenFolder">Import a Pack Folder</button>
-        </div>
+
         <div class="flex" style="flex-wrap: wrap;">
             <div class="flex flexOne flexColumn">
 
                 <h2>Content</h2>
+                <section id="packContent"></section>
+
+                <h2>Package Information</h2>
                 <section id="packInformations"></section>
 
                 <h2>Thumbnails & Previews</h2>
@@ -26,6 +27,9 @@
             </div>
             <div id="rightScreen">
                 <div class="static">
+                    <div>
+                        <button id="btnOpenFolder">Import a Pack Folder</button>
+                    </div>
                     <div>
                         <p style="font-size: 25px;">
                             Please <a
@@ -48,7 +52,8 @@
                         <h2>Image Preview</h2>
                         <div id="tags"></div>
                         <div class="image-preview-container">
-                            <img id="clickedImagePreview" class="pixelAsset" src="./checkerboard.png" alt="Clicked Image Preview">
+                            <img id="clickedImagePreview" class="pixelAsset" src="./checkerboard.png"
+                                alt="Clicked Image Preview">
                         </div>
                     </div>
 
@@ -64,20 +69,20 @@
     <!--
 
         //TODO
-        - Add the folder name in tags
-
-
+        - A a global var to disable input renaming.
+        - Add an error if IGNORED.md is missing in previewImages
+        - Add an error if IGNORED.md is missing in previewSounds
+        
+        - List audio files.
+        
+        - Add the folder name in tags.
         - Make the thumbnail always first in the Thumbnails & Previews section.
         - Make the image from imagesPreview folder also clickable for preview.
-        - List audio files.
         - Add tags from the parent folder to the existing tags on the clicked image.
         - List the animation for each animated object.
 
         Later
         - Support use of asset.json
-        - Support 9-patch object nomenclature with preview
-
-
     -->
 
 </body>

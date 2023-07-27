@@ -33,6 +33,10 @@ a {
   overflow: auto;
 }
 
+#tags:empty {
+  display: none;
+}
+
 .chipTag {
   background-color: #616161;
   border-radius: 10px;
@@ -110,6 +114,15 @@ a {
   border-radius: 12px;
 }
 
+#errorList {
+  height: 150px;
+  overflow: auto;
+}
+
+#errorContainer:has(#errorList:empty) {
+  display: none;
+}
+
 #errorContainer h2 {
   margin: 0 0 10px;
   font-size: 16px;
@@ -176,4 +189,13 @@ ul#errorList li {
   flex-direction: column;
   width: 50%;
   margin-left: 86px;
+}
+
+#packContent > ul > li[count="0"] {
+  display: none;
+}
+
+#packContent > ul > li::before {
+  font-weight: bold;
+  content: attr(count);
 }

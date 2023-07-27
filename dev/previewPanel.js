@@ -106,6 +106,6 @@ export async function animateClickedImagePreview(fileEntries) {
   imagePreviewContainer.appendChild(newClickedImagePreview);
 
   if (fileContents.length > 1) {
-    setInterval(showNextImage, 1000);
+    setInterval(showNextImage, 250);
   }
 }

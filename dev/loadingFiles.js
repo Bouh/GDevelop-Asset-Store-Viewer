@@ -26,6 +26,8 @@ window.packfilesStructure = {
   subFolder: [], // Will be updated when listing the root folder
 };
 
+let contentNumberOfObjectPerType = {};
+
 /**
  * Adds a message to the error list with an optional class name for styling.
  * @param {string} textContent - The text content of the error message.
@@ -168,6 +170,16 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
         const fileContent = await readFile(systemHandle);
         const filename = systemHandle.name;
 
+        /*
+         else if (
+              filename.toLowerCase().includes(".mp3") ||
+              filename.toLowerCase().includes(".aac") ||
+              filename.toLowerCase().includes(".wav")
+            ) {
+              // Is a sound or mussic file
+              contentNumberOfObjectPerType.sound++;
+        */
+
         if (fileContent.type.startsWith("image/")) {
           //If the filename have spaces around underscore.
           if (underscoresHaveSpacesAround(filename)) {
@@ -187,25 +199,43 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
               previewImagesSection
             );
           } else {
-            let prefix = filename.split("_")[0];
+            let prefix = filename;
 
             if (filename.toLowerCase().startsWith("9patch_")) {
               //Is a 9-patch
+              contentNumberOfObjectPerType.ninePatch++;
               prefix = filename.split("_")[1];
               console.log("Is 9-patch: " + filename);
             } else if (filename.toLowerCase().startsWith("tiled_")) {
               // Is a tiled
+              contentNumberOfObjectPerType.tiled++;
               console.log("Is tiled: " + filename);
               prefix = filename.split("_")[1];
-            } else if (countCharacter(filename.toLowerCase(), "_") == 2) {
-              // Is an animated object
-            } else if (countCharacter(filename.toLowerCase(), "_") <= 1) {
+            } else if (countCharacter(filename.toLowerCase(), "_") > 0) {
+              if (countCharacter(filename.toLowerCase(), "_") == 2) {
+                // Is an animated object with multiple animation(s)
+                prefix = filename.split("_")[0];
+              } else if (countCharacter(filename.toLowerCase(), "_") <= 1) {
+                // Is an animated object with only once animation
+                prefix = filename.split("_")[0];
+              } else {
+                addMessageToErrorList(
+                  '"' +
+                    filename +
+                    '" is not a valid file name. Please read <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#naming-assets" target="_blank">the naming convention.</a>',
+                  "error"
+                );
+                continue;
+              }
+            } else if (countCharacter(filename.toLowerCase(), "_") == 0) {
+              // Is a static object
+              contentNumberOfObjectPerType.staticObject++;
               if (filename.toLowerCase().includes(".preview.")) {
                 console.log("IGNORE: " + filename);
                 continue;
               }
-              // Is a static object
             } else {
+              contentNumberOfObjectPerType.wrongNaningConvention++;
               addMessageToErrorList(
                 '"' +
                   filename +
@@ -214,7 +244,6 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
               );
             }
 
-            prefix = prefix.split(".")[0];
             if (!filenameGroups[prefix]) {
               filenameGroups[prefix] = [];
             }
@@ -225,17 +254,47 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
               name: systemHandle.name,
               handle: systemHandle,
             });
+
+            const packContent = document.getElementById("packContent");
+            packContent.innerHTML = `
+            <ul>
+              <li count="${
+                contentNumberOfObjectPerType.ninePatch
+              }"> Panel sprites</li>
+              <li count="${
+                contentNumberOfObjectPerType.tiled
+              }"> Tiled sprites</li>
+              <li count="${
+                contentNumberOfObjectPerType.staticObject
+              }"> Static sprites</li>
+              <li style="display:none;" count="${
+                contentNumberOfObjectPerType.animatedObjectMultipleAnimations +
+                contentNumberOfObjectPerType.animatedObjectOnceAnimation
+              }"> Animated objects</li>
+              <li count="${
+                contentNumberOfObjectPerType.animatedObjectMultipleAnimations
+              }"> Objects with multiple animations</li>
+              <li count="${
+                contentNumberOfObjectPerType.animatedObjectOnceAnimation
+              }"> Objects with only one animation</li>
+              <li count="${contentNumberOfObjectPerType.sound}"> Audios</li>
+              <li count="${
+                contentNumberOfObjectPerType.wrongNaningConvention
+              }"> files with the wrong naming convention.</li>
+            </ul>`;
           }
         } else {
           // File have a parentFolder
           if (parentFolder) {
+            contentNumberOfObjectPerType.otherUnknown++;
+
             parentFolder.files.push({
               kind: "file",
               name: systemHandle.name,
               handle: systemHandle,
             });
           } else {
-            // If parentFolder is null, it means this is the root folder
+            // The root folder
             packfilesStructure.files.push({
               kind: "file",
               name: systemHandle.name,
@@ -251,6 +310,8 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
       const filenameGroup = filenameGroups[prefix];
       const firstEntry = filenameGroup[0];
       const fileContent = await readFile(firstEntry);
+
+      contentNumberOfObjectPerType.animatedObjectMultipleAnimations++;
       createImageGridItem(prefix, fileContent, firstEntry, gridContainer);
 
       const remainingFiles = filenameGroup;
@@ -262,20 +323,24 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
   } catch (error) {
     console.error("Error accessing the folder:", error);
   }
-
-  const packDetailsDiv = document.getElementById("numberOfSprites");
-
-  if (packDetailsDiv) {
-    packDetailsDiv.innerHTML =
-      document.querySelectorAll("#gridContainer")[0].childNodes.length +
-      " Sprites (Objects)";
-  }
 }
 
 /**
  * Handles the click event of the "Open Folder" button.
  */
 async function handleOpenFolderButtonClick() {
+
+  contentNumberOfObjectPerType = {
+    ninePatch: 0,
+    tiled: 0,
+    animatedObjectMultipleAnimations: 0,
+    animatedObjectOnceAnimation: 0,
+    staticObject: 0,
+    sound: 0,
+    otherUnknown: 0,
+    wrongNaningConvention: 0,
+  };
+
   try {
     const directoryHandle = await window.showDirectoryPicker();
     gridContainer.innerHTML = "";
