@@ -25,19 +25,26 @@ span {
 a {
   color: #00fff4;
   font-weight: bold;
-  
 }
 
-.hidden{
+#tags {
+  display: block;
+  height: 73px;
+  overflow: auto;
+}
+
+#tags:empty {
   display: none;
 }
 
 .chipTag {
   background-color: #616161;
   border-radius: 10px;
+  padding: 4px 10px;
+  margin: 3px;
+  height: fit-content;
   width: fit-content;
-  padding: 4px 9px;
-  margin-right: 4px;
+  float: left;
 }
 
 .grid-container {
@@ -75,11 +82,11 @@ a {
 }
 
 .pixelAsset {
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   width: 100%;
   image-rendering: pixelated;
-  padding: 15px;
-  margin: 10px;
 }
 
 .grid-item .file-name {
@@ -105,6 +112,15 @@ a {
   border: 1px solid #ccc;
   background-color: #19191f;
   border-radius: 12px;
+}
+
+#errorList {
+  height: 150px;
+  overflow: auto;
+}
+
+#errorContainer:has(#errorList:empty) {
+  display: none;
 }
 
 #errorContainer h2 {
@@ -154,13 +170,7 @@ ul#errorList li {
   margin-top: 10px;
   border: 1px solid #ccc;
   padding: 5px;
-}
-
-#clickedImagePreview {
-  max-width: 100%;
-  max-height: 300px;
-  display: block;
-  margin: auto;
+  height: 500px;
 }
 
 .flex {
@@ -179,4 +189,13 @@ ul#errorList li {
   flex-direction: column;
   width: 50%;
   margin-left: 86px;
+}
+
+#packContent > ul > li[count="0"] {
+  display: none;
+}
+
+#packContent > ul > li::before {
+  font-weight: bold;
+  content: attr(count);
 }

@@ -159,3 +159,19 @@ export function underscoresHaveSpacesAround(inputString) {
   // Test if the string contains underscores with no spaces around them
   return regex.test(inputString);
 }
+
+export function countCharacter(inputString, otherString) {
+  let count = 0;
+
+  // Iterate through each character of the otherString
+  for (const char of otherString) {
+    // Use a regular expression to find all occurrences of the character in the inputString
+    const regex = new RegExp(char, 'g');
+    const charOccurrences = inputString.match(regex);
+
+    // Increment the count by the number of occurrences of the character in the inputString
+    count += charOccurrences ? charOccurrences.length : 0;
+  }
+
+  return count;
+}

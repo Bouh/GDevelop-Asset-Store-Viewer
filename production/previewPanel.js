@@ -75,6 +75,7 @@ export async function animateClickedImagePreview(fileEntries) {
 
   const newClickedImagePreview = document.createElement("img");
   newClickedImagePreview.id = "clickedImagePreview";
+  newClickedImagePreview.className = "pixelAsset";
 
   const fileContents = await Promise.all(fileEntries.map(readFile));
   const objectURLs = fileContents.map((fileContent) =>
@@ -101,10 +102,10 @@ export async function animateClickedImagePreview(fileEntries) {
 
   const imagePreviewContainer = document.querySelector(
     ".image-preview-container"
-  );
+  ); 
   imagePreviewContainer.appendChild(newClickedImagePreview);
 
   if (fileContents.length > 1) {
-    setInterval(showNextImage, 1000);
+    setInterval(showNextImage, 250);
   }
 }
