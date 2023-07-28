@@ -32,10 +32,14 @@ let contentNumberOfObjectPerType = {};
  * Adds a message to the error list with an optional class name for styling.
  * @param {string} textContent - The text content of the error message.
  * @param {string} className - Optional class name for styling the error message.
+ * @param {string} colorOptionnal - Optional color for the font
  */
-function addMessageToErrorList(textContent, className) {
+function addMessageToErrorList(textContent, className, colorOptionnal) {
   const listItem = document.createElement("li");
   listItem.innerHTML = textContent;
+  if (colorOptionnal) {
+    listItem.style = "color:" + colorOptionnal;
+  }
   if (className) {
     listItem.classList.add(className);
   }
@@ -142,7 +146,8 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
           } else {
             addMessageToErrorList(
               '"pack.json" file is empty. Please read <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#the-title-description-and-price" target="_blank">this part of the documentation.</a>',
-              "warning"
+              "warning",
+              "yellow"
             );
           }
         }
@@ -220,9 +225,9 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
                 prefix = filename.split("_")[0];
               } else {
                 addMessageToErrorList(
-                  '"' +
+                  '<strong>' +
                     filename +
-                    '" is not a valid file name. Please read <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#naming-assets" target="_blank">the naming convention.</a>',
+                    '</strong>: is not a valid file name (There is more than two underscore in name). Please read <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#naming-assets" target="_blank">the naming convention.</a>',
                   "error"
                 );
                 continue;
@@ -329,7 +334,6 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
  * Handles the click event of the "Open Folder" button.
  */
 async function handleOpenFolderButtonClick() {
-
   contentNumberOfObjectPerType = {
     ninePatch: 0,
     tiled: 0,
