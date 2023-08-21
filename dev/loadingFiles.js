@@ -225,7 +225,7 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
                 prefix = filename.split("_")[0];
               } else {
                 addMessageToErrorList(
-                  '<strong>' +
+                  "<strong>" +
                     filename +
                     '</strong>: is not a valid file name (There is more than two underscore in name). Please read <a href="https://wiki.gdevelop.io/gdevelop5/community/contribute-to-the-assets-store/#naming-assets" target="_blank">the naming convention.</a>',
                   "error"
@@ -263,9 +263,17 @@ async function parsePackFolder(directoryHandle, isRoot = true, parentFolder) {
             const packContent = document.getElementById("packContent");
             packContent.innerHTML = `
             <ul>
-              <li count="${
-                contentNumberOfObjectPerType.ninePatch
-              }"> Panel sprites</li>
+            <li count="${
+              contentNumberOfObjectPerType.staticObject +
+              contentNumberOfObjectPerType.ninePatch +
+              contentNumberOfObjectPerType.tiled +
+              contentNumberOfObjectPerType.animatedObjectMultipleAnimations +
+              contentNumberOfObjectPerType.animatedObjectOnceAnimation +
+              contentNumberOfObjectPerType.sound
+            }"> Total assets</li><br>
+            <li count="${
+              contentNumberOfObjectPerType.ninePatch
+            }"> Panel sprites</li>
               <li count="${
                 contentNumberOfObjectPerType.tiled
               }"> Tiled sprites</li>
